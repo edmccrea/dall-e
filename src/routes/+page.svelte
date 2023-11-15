@@ -1,9 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { fade, fly } from "svelte/transition";
+  import { createDialog, melt } from "@melt-ui/svelte";
   // @ts-ignore
   import CryptoJS from "crypto-js";
-  import { createDialog, melt } from "@melt-ui/svelte";
-  import { fade, fly } from "svelte/transition";
+
+  import { createDownloadUrl } from "$lib/utils/create-download-url";
 
   const {
     elements: { trigger, portalled, overlay, content, close },
@@ -17,6 +19,7 @@
   let imageRendered = false;
   let placeholderText = "";
   let style = "vivid";
+  let downloadUrl = "";
 
   onMount(async () => {
     const res = await fetch("/api/encryption-key");
@@ -65,12 +68,13 @@
       },
       body: JSON.stringify({ prompt, key: apiKey, style }),
     });
-    console.log(res);
 
     if (res.ok) {
       const data = await res.json();
       prompt = "";
-      imgSrc = data[0].url;
+      imgSrc = `data:image/jpeg;base64,${data[0].b64_json}`;
+      const base64 = data[0].b64_json;
+      downloadUrl = createDownloadUrl(base64, "image/jpeg");
     } else {
       loading = false;
       alert("Something went wrong");
@@ -101,6 +105,11 @@
 <div class="min-h-screen min-w-screen flex justify-center screen relative px-4">
   <button use:melt={$trigger} class="absolute bottom-4 left-4 underline"
     >Set API Key</button
+  >
+
+  <button
+    class="absolute bottom-4 right-4 px-4 py-2 shadow-xl rounded-lg bg-neutral-50"
+    >Settings</button
   >
 
   <div class="flex flex-col items-center w-[512px] mt-11">
@@ -139,7 +148,7 @@
       >
     </form>
     <div
-      class="w-[512px] h-[512px] max-w-[90vw] aspect-square overflow-hidden rounded-md shadow-sm relative"
+      class="w-[512px] max-h-[512px] max-w-[90vw] aspect-square overflow-hidden rounded-md shadow-sm relative"
     >
       <div class={loading ? "skeleton-loader" : "hidden"} />
       {#if imgSrc}
@@ -161,9 +170,9 @@
         <div class="hover:cursor-pointer" on:click={reset} on:keydown={reset}>
           <img src="/arrow-path.svg" alt="" class=" w-5 h-5" />
         </div>
-        <div class="hover:cursor-pointer">
+        <a href={downloadUrl} download="image.jpg">
           <img src="arrow-down-tray.svg" alt="" class="w-5 h-5" />
-        </div>
+        </a>
       </div>
     {/if}
   </div>

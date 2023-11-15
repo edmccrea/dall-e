@@ -16,8 +16,8 @@ export const POST: RequestHandler = async ({ request }) => {
     const image = await openai.images.generate({
       model: "dall-e-3",
       prompt: requestData.prompt,
+      response_format: "b64_json",
     });
-    console.log(image.data);
 
     return new Response(JSON.stringify(image.data));
   } catch (error) {
