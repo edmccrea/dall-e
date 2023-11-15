@@ -1,6 +1,10 @@
 import OpenAI from "openai";
 import type { RequestHandler } from "./$types";
 
+export const config = {
+  runtime: "edge",
+};
+
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const requestData = await request.json();

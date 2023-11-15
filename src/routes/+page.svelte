@@ -37,7 +37,6 @@
   });
 
   async function setApiKey() {
-    console.log("setting api key", apiKey);
     const res = await fetch("/api/encryption-key");
     const encryptionKey = await res.text();
     const encryptedMessage = CryptoJS.AES.encrypt(
@@ -156,14 +155,17 @@
         <img src="/mesh.jpg" alt="" />
       {/if}
     </div>
-    <div class="flex gap-4 mt-8 bg-black px-6 py-2 rounded-xl shadow-lg">
-      <div class="hover:cursor-pointer" on:click={reset} on:keydown={reset}>
-        <img src="/arrow-path.svg" alt="" class=" w-5 h-5" />
+
+    {#if imageRendered}
+      <div class="flex gap-4 mt-8 bg-black px-6 py-2 rounded-xl shadow-lg">
+        <div class="hover:cursor-pointer" on:click={reset} on:keydown={reset}>
+          <img src="/arrow-path.svg" alt="" class=" w-5 h-5" />
+        </div>
+        <div class="hover:cursor-pointer">
+          <img src="arrow-down-tray.svg" alt="" class="w-5 h-5" />
+        </div>
       </div>
-      <div class="hover:cursor-pointer">
-        <img src="arrow-down-tray.svg" alt="" class="w-5 h-5" />
-      </div>
-    </div>
+    {/if}
   </div>
 </div>
 
