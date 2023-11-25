@@ -17,6 +17,7 @@ export const POST: RequestHandler = async ({ request }) => {
       model: "dall-e-3",
       prompt: requestData.prompt,
       response_format: "b64_json",
+      style: requestData.style,
     });
 
     return new Response(JSON.stringify(image.data));

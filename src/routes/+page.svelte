@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { fade, fly } from "svelte/transition";
+  import { fade, fly, slide } from "svelte/transition";
   import { createDialog, melt } from "@melt-ui/svelte";
   // @ts-ignore
   import CryptoJS from "crypto-js";
@@ -8,7 +8,7 @@
   import { createDownloadUrl } from "$lib/utils/create-download-url";
 
   const {
-    elements: { trigger, portalled, overlay, content, close },
+    elements: { trigger, portalled, overlay, content, close, title },
     states: { open },
   } = createDialog();
 
@@ -20,6 +20,7 @@
   let placeholderText = "";
   let style = "vivid";
   let downloadUrl = "";
+  let apiKeyInputOpen = false;
 
   onMount(async () => {
     const res = await fetch("/api/encryption-key");
@@ -52,6 +53,7 @@
 
   async function generateImage() {
     if (!apiKey) {
+      apiKeyInputOpen = true;
       open.set(true);
       return;
     }
@@ -103,11 +105,8 @@
 </script>
 
 <div class="min-h-screen min-w-screen flex justify-center screen relative px-4">
-  <button use:melt={$trigger} class="absolute bottom-4 left-4 underline"
-    >Set API Key</button
-  >
-
   <button
+    use:melt={$trigger}
     class="absolute bottom-4 right-4 px-4 py-2 shadow-xl rounded-lg bg-neutral-50"
     >Settings</button
   >
@@ -185,17 +184,53 @@
       use:melt={$content}
       class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw]
     max-w-[450px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-neutral-50
-    px-12 pt-16 pb-12 shadow-lg"
+    px-12 pt-12 pb-16 shadow-lg"
       in:fly={{ y: 100, duration: 200 }}
     >
+      <h2 use:melt={$title} class="mb-2">Settings</h2>
+      <div class="flex flex-col mb-2">
+        <label for="style" class="text-sm text-neutral-500">Style</label>
+        <select
+          name="style"
+          id=""
+          bind:value={style}
+          class="px-4 py-2 mt-1 bg-transparent border border-neutral-300 rounded-md shadow-inner focus:outline-none focus:ring focus:ring-sky-100 transition-all duration-300 ease-in-out"
+        >
+          <option value="vivid">Vivid</option>
+          <option value="natural">Natural</option>
+        </select>
+      </div>
       <form action="" on:submit={setApiKey}>
-        <input
-          type="password"
-          placeholder="Enter your OpenAI API key..."
-          class="w-full px-4 py-2 bg-transparent border border-neutral-300 rounded-md shadow-inner focus:outline-none focus:ring focus:ring-sky-100 transition-all duration-300 ease-in-out"
-          bind:value={apiKey}
-        />
-        <button class="underline mt-2" type="submit">Submit</button>
+        <div class="px-4 py-2 bg-neutral-200/50 rounded-lg mt-4">
+          <div
+            class="flex justify-between hover:cursor-pointer items-center"
+            on:click={() => (apiKeyInputOpen = !apiKeyInputOpen)}
+          >
+            <label for="key" class="text-sm text-neutral-700"
+              >Open AI API Key</label
+            >
+
+            <img
+              src="/chevron-down.svg"
+              alt=""
+              class="{apiKeyInputOpen
+                ? '-rotate-180'
+                : ''} h-4 transition-all duration-200 ease-in"
+            />
+          </div>
+          {#if apiKeyInputOpen}
+            <div transition:slide>
+              <input
+                name="key"
+                type="password"
+                placeholder="Enter your OpenAI API key..."
+                class="w-full px-4 py-2 mt-1 bg-transparent border border-neutral-500 rounded-md shadow-inner focus:outline-none focus:ring focus:ring-sky-100 transition-all duration-300 ease-in-out"
+                bind:value={apiKey}
+              />
+              <button class="underline mt-2" type="submit">Submit</button>
+            </div>
+          {/if}
+        </div>
       </form>
       <button use:melt={$close} class="top-4 right-4 absolute"
         ><svg
