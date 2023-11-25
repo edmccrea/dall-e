@@ -166,7 +166,13 @@
 
     {#if imageRendered}
       <div class="flex gap-4 mt-8 bg-black px-6 py-2 rounded-xl shadow-lg">
-        <div class="hover:cursor-pointer" on:click={reset} on:keydown={reset}>
+        <div
+          class="hover:cursor-pointer"
+          on:click={reset}
+          on:keydown={reset}
+          role="button"
+          tabindex="0"
+        >
           <img src="/arrow-path.svg" alt="" class=" w-5 h-5" />
         </div>
         <a href={downloadUrl} download="image.jpg">
@@ -205,6 +211,9 @@
           <div
             class="flex justify-between hover:cursor-pointer items-center"
             on:click={() => (apiKeyInputOpen = !apiKeyInputOpen)}
+            on:keydown={() => (apiKeyInputOpen = !apiKeyInputOpen)}
+            role="button"
+            tabindex="0"
           >
             <label for="key" class="text-sm text-neutral-700"
               >Open AI API Key</label
@@ -224,7 +233,7 @@
                 name="key"
                 type="password"
                 placeholder="Enter your OpenAI API key..."
-                class="w-full px-4 py-2 mt-1 bg-transparent border border-neutral-500 rounded-md shadow-inner focus:outline-none focus:ring focus:ring-sky-100 transition-all duration-300 ease-in-out"
+                class="w-full px-4 py-2 mt-3 bg-transparent border border-neutral-500 rounded-md shadow-inner focus:outline-none focus:ring focus:ring-sky-100 transition-all duration-300 ease-in-out"
                 bind:value={apiKey}
               />
               <button class="underline mt-2" type="submit">Submit</button>
@@ -273,6 +282,16 @@
     );
     background-size: 200% auto;
     animation: skeleton 2.5s linear infinite;
+  }
+
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("chevron-down.svg");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 1rem) center;
+    background-size: 1em;
   }
 
   @keyframes skeleton {
